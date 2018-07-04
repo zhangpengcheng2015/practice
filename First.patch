@@ -1,0 +1,442 @@
+Index: practice.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- practice.iml	(date 1530617910055)
++++ practice.iml	(date 1530617910055)
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="JAVA_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$">
++      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
++    </content>
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/modules.xml	(date 1530617910138)
++++ .idea/modules.xml	(date 1530617910138)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/practice.iml" filepath="$PROJECT_DIR$/practice.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+Index: src/Day01/P01.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Day01/P01.java	(date 1530623828222)
++++ src/Day01/P01.java	(date 1530623828222)
+@@ -0,0 +1,39 @@
++package Day01;
++
++import java.util.Stack;
++
++//如何把一个栈（从小到大）排序，只能借助一个辅助栈
++public class P01 {
++    public static void sortStackByStack(Stack<Integer> stack){
++        Stack<Integer> help = new Stack<Integer>();
++        while(!stack.isEmpty()){
++            int cur = stack.pop();
++            //如果help栈不为空，或者help.peek()<cur
++            while(!help.isEmpty() && help.peek() < cur){
++                stack.push(help.pop());
++            }
++            help.push(cur);
++        }
++        //将help栈重新压回stack栈中
++        while(!help.isEmpty()){
++            stack.push(help.pop());
++        }
++    }
++
++    public static void main(String[] args) {
++        Stack<Integer> stack = new Stack<Integer>();
++        stack.push(3);
++        stack.push(1);
++        stack.push(6);
++        stack.push(2);
++        stack.push(5);
++        stack.push(4);
++        sortStackByStack(stack);
++        System.out.println(stack.pop());
++        System.out.println(stack.pop());
++        System.out.println(stack.pop());
++        System.out.println(stack.pop());
++        System.out.println(stack.pop());
++        System.out.println(stack.pop());
++    }
++}
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(date 1530617910084)
++++ .idea/misc.xml	(date 1530617910084)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
++    <output url="file://$PROJECT_DIR$/out" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/Day01/P02.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Day01/P02.java	(date 1530675731243)
++++ src/Day01/P02.java	(date 1530675731243)
+@@ -0,0 +1,105 @@
++package Day01;
++
++import java.util.Stack;
++
++public class P02 {
++
++    public static int hanoiProblem1(int num, String left, String mid,
++                                    String right) {
++        if (num < 1) {
++            return 0;
++        }
++        return process(num, left, mid, right, left, right);
++    }
++
++    public static int process(int num, String left, String mid, String right,
++                              String from, String to) {
++        if (num == 1) {
++            if (from.equals(mid) || to.equals(mid)) {
++                System.out.println("Move 1 from " + from + " to " + to);
++                return 1;
++            } else {
++                System.out.println("Move 1 from " + from + " to " + mid);
++                System.out.println("Move 1 from " + mid + " to " + to);
++                return 2;
++            }
++        }
++        if (from.equals(mid) || to.equals(mid)) {
++            String another = (from.equals(left) || to.equals(left)) ? right : left;
++            int part1 = process(num - 1, left, mid, right, from, another);
++            int part2 = 1;
++            System.out.println("Move " + num + " from " + from + " to " + to);
++            int part3 = process(num - 1, left, mid, right, another, to);
++            return part1 + part2 + part3;
++        } else {
++            int part1 = process(num - 1, left, mid, right, from, to);
++            int part2 = 1;
++            System.out.println("Move " + num + " from " + from + " to " + mid);
++            int part3 = process(num - 1, left, mid, right, to, from);
++            int part4 = 1;
++            System.out.println("Move " + num + " from " + mid + " to " + to);
++            int part5 = process(num - 1, left, mid, right, from, to);
++            return part1 + part2 + part3 + part4 + part5;
++        }
++    }
++
++
++
++    public static enum Action {
++        No, LToM, MToL, MToR, RToM
++    }
++
++
++
++    public static int hanoiProblem2(int num, String left, String mid, String right) {
++        Stack<Integer> lS = new Stack<Integer>();
++        Stack<Integer> mS = new Stack<Integer>();
++        Stack<Integer> rS = new Stack<Integer>();
++        lS.push(Integer.MAX_VALUE);
++        mS.push(Integer.MAX_VALUE);
++        rS.push(Integer.MAX_VALUE);
++        for (int i = num; i > 0; i--) {
++            lS.push(i);
++        }
++        Action[] record = { Action.No };
++        int step = 0;
++        while (rS.size() != num + 1) {
++            step += fStackTotStack(record, Action.MToL, Action.LToM, lS, mS, left, mid);
++            step += fStackTotStack(record, Action.LToM, Action.MToL, mS, lS, mid, left);
++            step += fStackTotStack(record, Action.RToM, Action.MToR, mS, rS, mid, right);
++            step += fStackTotStack(record, Action.MToR, Action.RToM, rS, mS, right, mid);
++        }
++        return step;
++    }
++
++    /*
++    *
++    * */
++    public static int fStackTotStack(Action[] record, Action preNoAct,
++                                     Action nowAct, Stack<Integer> fStack, Stack<Integer> tStack,
++                                     String from, String to) {
++        if (record[0] != preNoAct && fStack.peek() < tStack.peek()) {
++            tStack.push(fStack.pop());
++            System.out.println("Move " + tStack.peek() + " from " + from + " to " + to);
++            record[0] = nowAct;
++            return 1;
++        }
++        return 0;
++    }
++
++    public static void main(String[] args) {
++        int num = 3;
++
++        // solution 1
++//        int steps1 = hanoiProblem1(num, "left", "mid", "right");
++//        System.out.println("It will move " + steps1 + " steps.");
++//        System.out.println("===================================");
++
++        // solution 2
++        int steps2 = hanoiProblem2(num, "left", "mid", "right");
++        System.out.println("It will move " + steps2 + " steps.");
++        System.out.println("===================================");
++
++    }
++
++}
+Index: .idea/uiDesigner.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/uiDesigner.xml	(date 1530623828507)
++++ .idea/uiDesigner.xml	(date 1530623828507)
+@@ -0,0 +1,124 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="Palette2">
++    <group name="Swing">
++      <item class="com.intellij.uiDesigner.HSpacer" tooltip-text="Horizontal Spacer" icon="/com/intellij/uiDesigner/icons/hspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
++        <default-constraints vsize-policy="1" hsize-policy="6" anchor="0" fill="1" />
++      </item>
++      <item class="com.intellij.uiDesigner.VSpacer" tooltip-text="Vertical Spacer" icon="/com/intellij/uiDesigner/icons/vspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
++        <default-constraints vsize-policy="6" hsize-policy="1" anchor="0" fill="2" />
++      </item>
++      <item class="javax.swing.JPanel" icon="/com/intellij/uiDesigner/icons/panel.png" removable="false" auto-create-binding="false" can-attach-label="false">
++        <default-constraints vsize-policy="3" hsize-policy="3" anchor="0" fill="3" />
++      </item>
++      <item class="javax.swing.JScrollPane" icon="/com/intellij/uiDesigner/icons/scrollPane.png" removable="false" auto-create-binding="false" can-attach-label="true">
++        <default-constraints vsize-policy="7" hsize-policy="7" anchor="0" fill="3" />
++      </item>
++      <item class="javax.swing.JButton" icon="/com/intellij/uiDesigner/icons/button.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="0" hsize-policy="3" anchor="0" fill="1" />
++        <initial-values>
++          <property name="text" value="Button" />
++        </initial-values>
++      </item>
++      <item class="javax.swing.JRadioButton" icon="/com/intellij/uiDesigner/icons/radioButton.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="0" hsize-policy="3" anchor="8" fill="0" />
++        <initial-values>
++          <property name="text" value="RadioButton" />
++        </initial-values>
++      </item>
++      <item class="javax.swing.JCheckBox" icon="/com/intellij/uiDesigner/icons/checkBox.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="0" hsize-policy="3" anchor="8" fill="0" />
++        <initial-values>
++          <property name="text" value="CheckBox" />
++        </initial-values>
++      </item>
++      <item class="javax.swing.JLabel" icon="/com/intellij/uiDesigner/icons/label.png" removable="false" auto-create-binding="false" can-attach-label="false">
++        <default-constraints vsize-policy="0" hsize-policy="0" anchor="8" fill="0" />
++        <initial-values>
++          <property name="text" value="Label" />
++        </initial-values>
++      </item>
++      <item class="javax.swing.JTextField" icon="/com/intellij/uiDesigner/icons/textField.png" removable="false" auto-create-binding="true" can-attach-label="true">
++        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1">
++          <preferred-size width="150" height="-1" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JPasswordField" icon="/com/intellij/uiDesigner/icons/passwordField.png" removable="false" auto-create-binding="true" can-attach-label="true">
++        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1">
++          <preferred-size width="150" height="-1" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JFormattedTextField" icon="/com/intellij/uiDesigner/icons/formattedTextField.png" removable="false" auto-create-binding="true" can-attach-label="true">
++        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1">
++          <preferred-size width="150" height="-1" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JTextArea" icon="/com/intellij/uiDesigner/icons/textArea.png" removable="false" auto-create-binding="true" can-attach-label="true">
++        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
++          <preferred-size width="150" height="50" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JTextPane" icon="/com/intellij/uiDesigner/icons/textPane.png" removable="false" auto-create-binding="true" can-attach-label="true">
++        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
++          <preferred-size width="150" height="50" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JEditorPane" icon="/com/intellij/uiDesigner/icons/editorPane.png" removable="false" auto-create-binding="true" can-attach-label="true">
++        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
++          <preferred-size width="150" height="50" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JComboBox" icon="/com/intellij/uiDesigner/icons/comboBox.png" removable="false" auto-create-binding="true" can-attach-label="true">
++        <default-constraints vsize-policy="0" hsize-policy="2" anchor="8" fill="1" />
++      </item>
++      <item class="javax.swing.JTable" icon="/com/intellij/uiDesigner/icons/table.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
++          <preferred-size width="150" height="50" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JList" icon="/com/intellij/uiDesigner/icons/list.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="6" hsize-policy="2" anchor="0" fill="3">
++          <preferred-size width="150" height="50" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JTree" icon="/com/intellij/uiDesigner/icons/tree.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3">
++          <preferred-size width="150" height="50" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JTabbedPane" icon="/com/intellij/uiDesigner/icons/tabbedPane.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="3" hsize-policy="3" anchor="0" fill="3">
++          <preferred-size width="200" height="200" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JSplitPane" icon="/com/intellij/uiDesigner/icons/splitPane.png" removable="false" auto-create-binding="false" can-attach-label="false">
++        <default-constraints vsize-policy="3" hsize-policy="3" anchor="0" fill="3">
++          <preferred-size width="200" height="200" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JSpinner" icon="/com/intellij/uiDesigner/icons/spinner.png" removable="false" auto-create-binding="true" can-attach-label="true">
++        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1" />
++      </item>
++      <item class="javax.swing.JSlider" icon="/com/intellij/uiDesigner/icons/slider.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="0" hsize-policy="6" anchor="8" fill="1" />
++      </item>
++      <item class="javax.swing.JSeparator" icon="/com/intellij/uiDesigner/icons/separator.png" removable="false" auto-create-binding="false" can-attach-label="false">
++        <default-constraints vsize-policy="6" hsize-policy="6" anchor="0" fill="3" />
++      </item>
++      <item class="javax.swing.JProgressBar" icon="/com/intellij/uiDesigner/icons/progressbar.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="0" hsize-policy="6" anchor="0" fill="1" />
++      </item>
++      <item class="javax.swing.JToolBar" icon="/com/intellij/uiDesigner/icons/toolbar.png" removable="false" auto-create-binding="false" can-attach-label="false">
++        <default-constraints vsize-policy="0" hsize-policy="6" anchor="0" fill="1">
++          <preferred-size width="-1" height="20" />
++        </default-constraints>
++      </item>
++      <item class="javax.swing.JToolBar$Separator" icon="/com/intellij/uiDesigner/icons/toolbarSeparator.png" removable="false" auto-create-binding="false" can-attach-label="false">
++        <default-constraints vsize-policy="0" hsize-policy="0" anchor="0" fill="1" />
++      </item>
++      <item class="javax.swing.JScrollBar" icon="/com/intellij/uiDesigner/icons/scrollbar.png" removable="false" auto-create-binding="true" can-attach-label="false">
++        <default-constraints vsize-policy="6" hsize-policy="0" anchor="0" fill="2" />
++      </item>
++    </group>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/vcs.xml	(date 1530684384177)
++++ .idea/vcs.xml	(date 1530684384177)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/Day01/P04.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Day01/P04.java	(date 1530682260303)
++++ src/Day01/P04.java	(date 1530682260303)
+@@ -0,0 +1,74 @@
++package Day01;
++
++import java.util.LinkedList;
++
++public class P04 {
++
++    public static int getNum(int[] arr, int num) {
++        if (arr == null || arr.length == 0) {
++            return 0;
++        }
++        LinkedList<Integer> qmin = new LinkedList<Integer>();//最小值队列
++        LinkedList<Integer> qmax = new LinkedList<Integer>();//最大值队列
++        int i = 0;//起始下标
++        int j = 0;
++        int res = 0;
++        while (i < arr.length) {
++            while (j < arr.length) {
++                while (!qmin.isEmpty() && arr[qmin.peekLast()] >= arr[j]) {
++                    qmin.pollLast();
++                }
++                qmin.addLast(j);
++                while (!qmax.isEmpty() && arr[qmax.peekLast()] <= arr[j]) {
++                    qmax.pollLast();
++                }
++                qmax.addLast(j);
++                //该范围内的最大值减去最小值>num的话，后面所有范围都不会满足
++                if (arr[qmax.getFirst()] - arr[qmin.getFirst()] > num) {
++                    break;
++                }
++                j++;
++            }
++            if (qmin.peekFirst() == i) {
++                qmin.pollFirst();
++            }
++            if (qmax.peekFirst() == i) {
++                qmax.pollFirst();
++            }
++            res += j - i;
++            i++;
++        }
++        return res;
++    }
++
++    // for test
++    public static int[] getRandomArray(int len) {
++        if (len < 0) {
++            return null;
++        }
++        int[] arr = new int[len];
++        for (int i = 0; i < len; i++) {
++            arr[i] = (int) (Math.random() * 10);
++        }
++        return arr;
++    }
++
++    // for test
++    public static void printArray(int[] arr) {
++        if (arr != null) {
++            for (int i = 0; i < arr.length; i++) {
++                System.out.print(arr[i] + " ");
++            }
++            System.out.println();
++        }
++    }
++
++    public static void main(String[] args) {
++        int[] arr = getRandomArray(30);
++        int num = 0;
++        printArray(arr);
++        System.out.println(getNum(arr, num));
++
++    }
++}
++
